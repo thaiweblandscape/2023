@@ -1,0 +1,12 @@
+name: Join
+on:
+  issue_comment:
+    types: [created]
+    issue:
+      number: 1
+jobs:
+  run-task:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo ok
