@@ -10,3 +10,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: echo ok
+      - name: Obtain a GitHub App Installation Access Token
+        id: githubAppAuth
+        run: |
+          TOKEN="$(npx obtain-github-app-installation-access-token ci ${{ secrets.GH_APP_CREDENTIALS_TOKEN }})"
+          echo "::add-mask::$TOKEN"
+          echo "::set-output name=token::$TOKEN"
+      - name: Invite
+        run: |
+          # https://docs.github.com/en/rest/teams/members?apiVersion=2022-11-28#add-or-update-team-membership-for-a-user
+          gh api \
+            --method PUT \
+            -H "Accept: application/vnd.github+json" \
+            /orgs/thaiweblandscape/teams/thai-web-landscape-2023/memberships/${{ github.event.comment.user.login }}
+        env:
+          GITHUB_TOKEN: ${{ steps.githubAppAuth.outputs.token }}
